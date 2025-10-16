@@ -1,7 +1,6 @@
-# +OK\r\n => OK, 5
 from typing import Any
 
-
+# +OK\r\n => OK, 5
 def read_simple_string(data: bytes) -> tuple[str, int]:
     pos = 1
     end = data.index(b'\r\n', pos)
@@ -37,7 +36,7 @@ def read_array(data: bytes) -> tuple[list[str], int]:
     return res, pos
 
 
-def resp_parse(data: bytes) -> list[Any]:
+def decode_resp(data: bytes) -> list[Any]:
     if not len(data):
         return None
     
@@ -62,3 +61,30 @@ def resp_parse(data: bytes) -> list[Any]:
         result.append(res)
     
     return result
+
+def encode_resp(value: Any) -> bytes:
+    if isinstance(value, Exception):  # Error
+        return f"-{value}\r\n".encode()
+
+    elif isinstance(value, str):  # Simple String
+        return f"+{value}\r\n".encode()
+
+    elif isinstance(value, int):  # Integer
+        return f":{value}\r\n".encode()
+
+    elif value is None:  # Null bulk string
+        return b"$-1\r\n"
+
+    elif isinstance(value, list):  # Array
+        encoded = f"*{len(value)}\r\n".encode()
+        for item in value:
+            if item is None:
+                encoded += b"$-1\r\n"
+            else:
+                item_str = str(item)
+                encoded += f"${len(item_str)}\r\n{item_str}\r\n".encode()
+        return encoded
+
+    else:  # Bulk String
+        s = str(value)
+        return f"${len(s)}\r\n{s}\r\n".encode()
