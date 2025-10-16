@@ -1,6 +1,9 @@
 import socket
 import selectors
 
+from commands import execute_command
+from resp import decode_resp
+
 HOST = "127.0.0.1"
 PORT = 65432
 
@@ -25,9 +28,15 @@ def read_client(conn: socket.socket) -> None:
         return
 
     if data:
-        msg: str = data.decode("utf-8").strip()
-        print(f"[RECEIVE] {conn.getpeername()}: {msg}")
-        conn.sendall(data)  # echo
+        print(f"[RECEIVE] {conn.getpeername()}: {data!r}")
+        parts = decode_resp(data)
+        if parts:
+            response = execute_command(parts)
+        else:
+            response = b"-ERR invalid RESP\r\n"
+
+        conn.sendall(response)
+
     else:
         print(f"[CLOSE] {conn.getpeername()}")
         sel.unregister(conn)
