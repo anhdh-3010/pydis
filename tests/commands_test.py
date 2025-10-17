@@ -14,4 +14,4 @@ class TestIntegration:
         raw = b"*2\r\n$4\r\nECHO\r\n$5\r\nhello\r\n"
         parts = decode_resp(raw)
         result = execute_command(parts)
-        assert result == b"+hello\r\n"
+        assert result == b"$5\r\nhello\r\n"

@@ -1,16 +1,17 @@
-from resp import encode_resp
+from constants import RespType
+from resp import RespValue, encode_resp
 
 COMMANDS = {
-    "PING": lambda args: encode_resp("PONG"),
-    "ECHO": lambda args: args[0]
+    "PING": lambda args: encode_resp(RespValue("PONG", RespType.SIMPLE_STRING)),
+    "ECHO": lambda args: encode_resp(RespValue(args[0], RespType.BULK_STRING))
     if args
-    else encode_resp(Exception("ERR wrong number of arguments")),
+    else encode_resp(RespValue("ERR wrong number of arguments", RespType.ERROR)),
 }
 
 
 def execute_command(parts: list[str]) -> bytes:
     if not parts:
-        return encode_resp(Exception("ERR empty command"))
+        return encode_resp(RespValue("ERR empty command", RespType.ERROR))
 
     cmd = parts[0].upper()
     args = parts[1:]
@@ -18,7 +19,7 @@ def execute_command(parts: list[str]) -> bytes:
     handler = COMMANDS.get(cmd)
 
     if not handler:
-        return encode_resp(Exception(f"ERR unknown command {cmd}"))
+        return encode_resp(RespValue(f"ERR unknown command {cmd}", RespType.ERROR))
 
     result = handler(args)
     return result

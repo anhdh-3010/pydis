@@ -1,5 +1,7 @@
 from typing import Any
 
+from constants import RespType
+
 
 # +OK\r\n => OK, 5
 def read_simple_string(data: bytes) -> tuple[str, int]:
@@ -30,11 +32,23 @@ def read_bulk_string(data: bytes) -> tuple[str | None, int | None]:
 
 
 # *2\r\n$5\r\nhello\r\n$5\r\nworld\r\n => ["hello", "world"], int
-def read_array(data: bytes) -> tuple[list[str], int]:
+def read_array(data: bytes) -> tuple[list, int]:
     length, pos = read_integer(data)
     res = []
+
     for _ in range(length):
-        value, consumed = read_bulk_string(data[pos:])
+        t = chr(data[pos])
+        if t == "+":
+            value, consumed = read_simple_string(data[pos:])
+        elif t == ":":
+            value, consumed = read_integer(data[pos:])
+        elif t == "$":
+            value, consumed = read_bulk_string(data[pos:])
+        elif t == "*":
+            value, consumed = read_array(data[pos:])
+        else:
+            raise ValueError(f"Unknown RESP type: {t}")
+
         res.append(value)
         if consumed is not None:
             pos += consumed
@@ -69,32 +83,53 @@ def decode_resp(data: bytes) -> list[Any]:
     return result
 
 
-def encode_resp(value: Any) -> bytes:
-    if isinstance(value, Exception):  # Error
-        return f"-{value}\r\n".encode()
+class RespValue:
+    def __init__(self, value, resp_type: RespType):
+        self.value = value
+        self.resp_type = resp_type
 
-    elif isinstance(value, int):  # Integer
-        return f":{value}\r\n".encode()
 
-    elif value is None:  # Null bulk string
-        return b"$-1\r\n"
-
-    elif isinstance(value, list):  # Array
+def encode_resp(value: RespValue | list[RespValue]) -> bytes:
+    if isinstance(value, list):  # Array (list of RespValue)
         encoded = f"*{len(value)}\r\n".encode()
         for item in value:
-            if item is None:
-                encoded += b"$-1\r\n"
-            else:
-                item_str = str(item)
-                encoded += f"${len(item_str)}\r\n{item_str}\r\n".encode()
+            encoded += encode_resp(item)
         return encoded
 
-    elif isinstance(value, str):  # Simple String
-        if value in ("OK", "PONG"):
-            return f"+{value}\r\n".encode()
+    if value.resp_type == RespType.ERROR:
+        return f"-{value.value}\r\n".encode()
 
-        return f"${value}\r\n".encode()
+    elif value.resp_type == RespType.INTEGER:
+        return f":{value.value}\r\n".encode()
 
-    else:  # Bulk String
-        s = str(value)
+    elif value.resp_type == RespType.NULL:
+        return b"$-1\r\n"
+
+    elif value.resp_type == RespType.SIMPLE_STRING:
+        return f"+{value.value}\r\n".encode()
+
+    elif value.resp_type == RespType.BULK_STRING:
+        if value.value is None:
+            return b"$-1\r\n"
+        s = str(value.value)
         return f"${len(s)}\r\n{s}\r\n".encode()
+
+    elif value.resp_type == RespType.ARRAY:
+        # value.value is expected to be an iterable of elements (possibly raw types)
+        items = value.value or []
+        encoded = f"*{len(items)}\r\n".encode()
+        for item in items:
+            if isinstance(item, RespValue):
+                encoded += encode_resp(item)
+            elif item is None:
+                encoded += encode_resp(RespValue(None, RespType.NULL))
+            elif isinstance(item, int):
+                encoded += encode_resp(RespValue(item, RespType.INTEGER))
+            else:
+                # default strings/others to bulk string representation
+                s = str(item)
+                encoded += encode_resp(RespValue(s, RespType.BULK_STRING))
+        return encoded
+
+    else:
+        raise TypeError(f"Unsupported RESP type: {value.resp_type}")
