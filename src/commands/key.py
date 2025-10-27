@@ -1,7 +1,7 @@
 """Key commands: DEL, EXPIRE, TTL, PERSIST, etc."""
 
-from pydis.protocol import RespType, RespValue, encode_resp
-from pydis.core import Store
+from src.protocol import RespType, RespValue, encode_resp
+from src.core import Store
 
 
 def command_del(store: Store, args: list[str]) -> bytes:
@@ -55,4 +55,3 @@ def command_persist(store: Store, args: list[str]) -> bytes:
     key = args[0]
     result = store.persist(key)
     return encode_resp(RespValue(1 if result else 0, RespType.INTEGER))
-

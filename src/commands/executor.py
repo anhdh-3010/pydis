@@ -1,7 +1,7 @@
 """Command executor - routes commands to appropriate handlers."""
 
-from pydis.protocol import RespType, RespValue, encode_resp
-from pydis.core import Store
+from src.protocol import RespType, RespValue, encode_resp
+from src.core import Store
 from .string import command_echo, command_get, command_set, command_setnx, command_incr
 from .key import command_del, command_expire, command_ttl, command_persist
 

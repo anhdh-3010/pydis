@@ -1,7 +1,7 @@
 """String commands: GET, SET, SETNX, INCR, etc."""
 
-from pydis.protocol import RespType, RespValue, encode_resp
-from pydis.core import Store
+from src.protocol import RespType, RespValue, encode_resp
+from src.core import Store
 
 
 def command_echo(store: Store, args: list[str]) -> bytes:
@@ -75,4 +75,3 @@ def command_incr(store: Store, args: list[str]) -> bytes:
             RespValue("ERR value is not an integer or out of range", RespType.ERROR)
         )
     return encode_resp(RespValue(new_val, RespType.INTEGER))
-

@@ -1,8 +1,8 @@
 import socket
 import selectors
 
-from pydis.commands import execute_command
-from pydis.protocol import decode_resp
+from .commands import execute_command
+from .protocol import decode_resp
 
 HOST = "127.0.0.1"
 PORT = 65432
@@ -70,4 +70,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
