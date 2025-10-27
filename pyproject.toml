@@ -1,7 +1,7 @@
 [project]
-name = "pyredis"
+name = "pydis"
 version = "0.1.0"
-description = "Add your description here"
+description = "A Redis clone implementation in Python"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

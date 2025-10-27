@@ -1,5 +1,5 @@
-from resp import decode_resp
-from commands import execute_command
+from src.protocol import decode_resp
+from src.commands import execute_command
 
 
 class TestIntegration:

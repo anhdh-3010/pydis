@@ -1,5 +1,4 @@
-from constants import RespType
-from resp import RespValue, decode_resp, encode_resp
+from src.protocol import RespType, RespValue, decode_resp, encode_resp
 
 
 class TestDecodeRESP:

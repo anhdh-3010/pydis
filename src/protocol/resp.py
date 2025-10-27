@@ -1,6 +1,6 @@
 from typing import Any
 
-from constants import RespType
+from .constants import RespType
 
 
 # +OK\r\n => OK, 5
@@ -133,3 +133,4 @@ def encode_resp(value: RespValue | list[RespValue]) -> bytes:
 
     else:
         raise TypeError(f"Unsupported RESP type: {value.resp_type}")
+
