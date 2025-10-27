@@ -1,6 +1,6 @@
-# PyDis - A Redis Clone in Python
+# A Redis Clone in Python
 
-PyDis là một implementation của Redis được viết bằng Python, hỗ trợ RESP protocol và các commands cơ bản.
+Pydis là một implementation của Redis được viết bằng Python, hỗ trợ RESP protocol và các commands cơ bản.
 
 ## 📁 Cấu trúc dự án
 
@@ -33,22 +33,11 @@ pydis/
 └── uv.lock
 ```
 
-## 🚀 Cài đặt và chạy
-
-### Cài đặt dependencies
-
-```bash
-uv sync
-```
-
 ### Chạy server
 
 ```bash
 # Sử dụng uv
 uv run python -m pydis.server
-
-# Hoặc sau khi cài đặt package
-pydis-server
 ```
 
 Server sẽ chạy trên `127.0.0.1:65432`
@@ -59,13 +48,13 @@ Server sẽ chạy trên `127.0.0.1:65432`
 redis-cli -p 65432
 ```
 
-## 🧪 Testing
+## Testing
 
 ```bash
 uv run pytest tests/ -v
 ```
 
-## 📝 Commands được hỗ trợ
+## Commands được hỗ trợ
 
 ### String Commands
 - `PING` - Ping server
@@ -81,9 +70,7 @@ uv run pytest tests/ -v
 - `TTL key` - Get remaining TTL
 - `PERSIST key` - Remove TTL
 
-## 🔮 Tương lai
-
-Dự án được tổ chức để dễ dàng mở rộng:
+## Tương lai
 
 ### Commands mới (trong `src/pydis/commands/`)
 - `hash.py` - HSET, HGET, HDEL, HGETALL, etc.
@@ -93,7 +80,6 @@ Dự án được tổ chức để dễ dàng mở rộng:
 
 ### Algorithms (trong `src/pydis/algorithms/`)
 - LRU/LFU cache eviction policies
-- Skip list cho sorted sets
 - HyperLogLog cho cardinality estimation
 - Bloom filters
 - Geospatial indexing
@@ -103,7 +89,6 @@ Dự án được tổ chức để dễ dàng mở rộng:
 - Replication
 - Pub/Sub
 - Transactions (MULTI/EXEC)
-- Lua scripting
 
 ## 🏗️ Kiến trúc
 
@@ -111,4 +96,3 @@ Dự án được tổ chức để dễ dàng mở rộng:
 - **Thread-safe**: Store sử dụng locks cho thread safety
 - **TTL Management**: Background thread tự động evict expired keys
 - **RESP Protocol**: Fully compliant với Redis protocol
-- **Modular Design**: Commands được tổ chức theo data types để dễ maintain
