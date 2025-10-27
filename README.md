@@ -1,8 +1,6 @@
-# A Redis Clone in Python
+# A simple in-memory key-value database
 
-Pydis là một implementation của Redis được viết bằng Python, hỗ trợ RESP protocol và các commands cơ bản.
-
-## 📁 Cấu trúc dự án
+## Cấu trúc dự án
 
 ```
 pydis/
