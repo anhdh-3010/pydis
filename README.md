@@ -70,15 +70,15 @@ uv run pytest tests/ -v
 - `TTL key` - Get remaining TTL
 - `PERSIST key` - Remove TTL
 
-## Tương lai
+## Todo list
 
-### Commands mới (trong `src/pydis/commands/`)
+### Commands mới (trong `src/commands/`)
 - `hash.py` - HSET, HGET, HDEL, HGETALL, etc.
 - `list.py` - LPUSH, RPUSH, LPOP, RPOP, LRANGE, etc.
 - `set.py` - SADD, SREM, SMEMBERS, SINTER, etc.
 - `sorted_set.py` - ZADD, ZRANGE, ZRANK, etc.
 
-### Algorithms (trong `src/pydis/algorithms/`)
+### Algorithms (trong `src/algorithms/`)
 - LRU/LFU cache eviction policies
 - HyperLogLog cho cardinality estimation
 - Bloom filters
@@ -90,7 +90,7 @@ uv run pytest tests/ -v
 - Pub/Sub
 - Transactions (MULTI/EXEC)
 
-## 🏗️ Kiến trúc
+## Kiến trúc
 
 - **Non-blocking I/O**: Sử dụng `selectors` để xử lý multiple connections
 - **Thread-safe**: Store sử dụng locks cho thread safety
